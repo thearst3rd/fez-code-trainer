@@ -4,11 +4,38 @@ extends Control
 const ACTIONS := ["up", "down", "left", "right", "jump", "rotate_left", "rotate_right"]
 const ACTION_MAP := ["Up", "Down", "Left", "Right", "A", "LT", "RT"]
 
+const CODES := [
+	["Left", "LT", "Left", "Right", "RT", "Down", "Up", "LT"],
+	["Left", "LT", "Right", "RT", "Up", "A", "Down", "RT", "RT"],
+]
 
-func _input(event: InputEvent) -> void:
+const MAX_BUTTON_HISTORY_SIZE := 16
+
+var button_history := []
+
+
+func _process(_delta: float) -> void:
 	for i in range(ACTIONS.size()):
-		var action := ACTIONS[i] as String
-		if event.is_action_pressed(action):
-			print(ACTION_MAP[i])
-			get_tree().set_input_as_handled()
-			return
+		var raw_action := ACTIONS[i] as String
+		if Input.is_action_just_pressed(raw_action):
+			var action = ACTION_MAP[i]
+			print(action)
+
+			button_history.push_back(action)
+			if button_history.size() > MAX_BUTTON_HISTORY_SIZE:
+				button_history.pop_front()
+
+			for ii in range(CODES.size()):
+				var code := CODES[ii] as Array
+				if entered_code(code):
+					print("Entered code %s" % [ii])
+
+
+func entered_code(code: Array) -> bool:
+	if button_history.size() < code.size():
+		return false
+	var offset := button_history.size() - code.size()
+	for i in code.size():
+		if code[i] != button_history[i + offset]:
+			return false
+	return true
