@@ -22,9 +22,9 @@ func _process(_delta: float) -> void:
 			print(action)
 
 			if action == "LT":
-				$RotateLeftSound.play()
+				play_sound($RotateLeftSound)
 			elif action == "RT":
-				$RotateRightSound.play()
+				play_sound($RotateRightSound)
 
 			button_history.push_back(action)
 			if button_history.size() > MAX_BUTTON_HISTORY_SIZE:
@@ -34,7 +34,7 @@ func _process(_delta: float) -> void:
 				var code := CODES[ii] as Array
 				if entered_code(code):
 					print("Entered code %s" % [ii])
-					$CodeEnteredSound.play()
+					play_sound($CodeEnteredSound)
 
 
 func entered_code(code: Array) -> bool:
@@ -45,3 +45,11 @@ func entered_code(code: Array) -> bool:
 		if code[i] != button_history[i + offset]:
 			return false
 	return true
+
+
+func play_sound(sound: AudioStreamPlayer):
+	var copy = sound.duplicate()
+	add_child(copy)
+	copy.play()
+	yield(copy, "finished")
+	copy.queue_free()
