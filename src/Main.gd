@@ -21,6 +21,11 @@ func _process(_delta: float) -> void:
 			var action = ACTION_MAP[i]
 			print(action)
 
+			if action == "LT":
+				$RotateLeftSound.play()
+			elif action == "RT":
+				$RotateRightSound.play()
+
 			button_history.push_back(action)
 			if button_history.size() > MAX_BUTTON_HISTORY_SIZE:
 				button_history.pop_front()
@@ -29,6 +34,7 @@ func _process(_delta: float) -> void:
 				var code := CODES[ii] as Array
 				if entered_code(code):
 					print("Entered code %s" % [ii])
+					$CodeEnteredSound.play()
 
 
 func entered_code(code: Array) -> bool:
